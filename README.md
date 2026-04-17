@@ -2,8 +2,7 @@
 
 ## Group Members
 - Inês Branco - nº 28990
-- Nome Apelido (nº estudante)
+- Sara Rodrigues - nº 28902
 
 ## Topic Proposal
 Scene Narrator
-
