@@ -9,17 +9,21 @@ model = YOLO("yolov8n.pt")
 
 cap = cv2.VideoCapture(0)
 
+frame_count = 0
+previous_scene = ""
+
 while True:
     ret, frame = cap.read()
 
     if not ret:
         break
 
+    frame_count += 1 
+
     results = model(frame, verbose=False)
 
     detections = []
-    frame_count = 0
-    previous_scene = ""
+    
     for box in results[0].boxes:
         cls_id = int(box.cls[0])
         label = model.names[cls_id]
@@ -31,7 +35,7 @@ while True:
             "label": label,
             "position": position
         })
-        frame_count += 1
+        
     scene_description = describe_scene(detections)
     normalized_scene = normalize_scene(detections)
     if frame_count % 60 == 0:
@@ -48,7 +52,7 @@ while True:
 
     annotated_frame = results[0].plot()
 
-    cv2.imshow("YOLO Detection", annotated_frame)
+    cv2.imshow("Scene Narrator", annotated_frame)
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
