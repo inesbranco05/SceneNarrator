@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import cv2
 from narrator import get_position, describe_scene
+from llm import generate_narration
 
 model = YOLO("yolov8n.pt")
 
