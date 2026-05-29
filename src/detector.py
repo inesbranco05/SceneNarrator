@@ -2,6 +2,8 @@ from ultralytics import YOLO
 import cv2
 from narrator import get_position, describe_scene
 from llm import generate_narration
+from utils import scene_changed
+from narrator import normalize_scene
 
 model = YOLO("yolov8n.pt")
 
@@ -13,10 +15,11 @@ while True:
     if not ret:
         break
 
-    results = model(frame)
+    results = model(frame, verbose=False)
 
     detections = []
-
+    frame_count = 0
+    previous_scene = ""
     for box in results[0].boxes:
         cls_id = int(box.cls[0])
         label = model.names[cls_id]
@@ -28,9 +31,20 @@ while True:
             "label": label,
             "position": position
         })
-
+        frame_count += 1
     scene_description = describe_scene(detections)
-    print(scene_description)
+    normalized_scene = normalize_scene(detections)
+    if frame_count % 60 == 0:
+
+        if scene_changed(normalized_scene, previous_scene):
+
+            narration = generate_narration(scene_description)
+
+            print("\nNarration:")
+            print(narration)
+            print("-" * 50)
+
+            previous_scene = normalized_scene
 
     annotated_frame = results[0].plot()
 

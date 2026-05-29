@@ -1,9 +1,6 @@
 from collections import Counter
 
 def get_position(x_center, frame_width):
-    """
-    Determines if object is on left, center or right.
-    """
 
     if x_center < frame_width / 3:
         return "left"
@@ -40,3 +37,9 @@ def describe_scene(detections):
             )
 
     return "There is " + ", ".join(descriptions) + "."
+
+def normalize_scene(detections):
+
+    labels = sorted([obj["label"] for obj in detections])
+
+    return ", ".join(labels)

@@ -11,17 +11,17 @@ API_KEY = os.getenv("GROQ_API_KEY")
 def generate_narration(scene_description):
 
     prompt = f"""
-    You are assisting a person.
+    You are a visual assistant for a person.
 
-    Describe the scene naturally and briefly.
+    Describe the scene naturally.
 
-    Avoid listing objects mechanically.
-
-    Focus on:
-    - important objects
-    - positions
-    - interactions
-    - overall scene understanding
+    Rules:
+    - Be brief
+    - Avoid repeating previous wording
+    - Focus on important changes
+    - Mention people first
+    - Mention interactions if possible
+    - Avoid listing objects mechanically
 
     Scene:
     {scene_description}
