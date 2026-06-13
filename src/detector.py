@@ -1,17 +1,32 @@
 from ultralytics import YOLO
 import cv2
-from narrator import get_position, describe_scene
-from llm import generate_narration, generate_environment_context
+from narrator import get_position, describe_scene, normalize_scene
+from llm import generate_narration
 from utils import scene_changed
-from narrator import normalize_scene
+from speech import speak
+from vision_context import generate_visual_context
 
 model = YOLO("yolov8n.pt")
 
 cap = cv2.VideoCapture(0)
 
+ret, first_frame = cap.read()
+
+if not ret:
+    print("Could not capture initial frame.")
+    exit()
+
+cv2.imwrite("initial_scene.jpg", first_frame)
+
+environment_context = generate_visual_context("initial_scene.jpg")
+
+print("\nENVIRONMENT MEMORY:")
+print(environment_context)
+print("-" * 50)
+
 frame_count = 0
 previous_scene = ""
-environment_context = None
+last_narration = ""
 
 while True:
     ret, frame = cap.read()
@@ -38,27 +53,22 @@ while True:
         })
         
     scene_description = describe_scene(detections)
-    if environment_context is None:
-
-        environment_context = generate_environment_context(
-            scene_description
-        )
-
-        print("\nEnvironment Context:")
-        print(environment_context)
-        print("-" * 50)
-
     normalized_scene = normalize_scene(detections)
+    
     if frame_count % 60 == 0:
 
         if scene_changed(normalized_scene, previous_scene):
 
             narration = generate_narration(scene_description, environment_context)
 
-            print("\nNarration:")
-            print(narration)
-            print("-" * 50)
+            if narration != last_narration:
+                print("\nNarration:")
+                print(narration)
+                print("-" * 50)
 
+                speak(narration)
+                
+                last_narration = narration
             previous_scene = normalized_scene
 
     annotated_frame = results[0].plot()
