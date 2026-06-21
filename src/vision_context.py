@@ -3,12 +3,16 @@ import base64
 import requests
 
 from dotenv import load_dotenv
+from pathlib import Path
 
-load_dotenv()
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(env_path)
 
 OPENROUTER_API_KEY = os.getenv(
     "OPENROUTER_API_KEY"
 )
+
+print("OPENROUTER loaded:", OPENROUTER_API_KEY is not None)
 
 
 def encode_image(image_path):
@@ -25,35 +29,52 @@ def generate_visual_context(image_path):
     image_b64 = encode_image(image_path)
 
     prompt = """
-    Analyze this image and create a permanent environment memory.
+Analyze this image and create a permanent environment memory.
 
-    IMPORTANT:
+Ignore:
+- people
+- animals
+- actions
+- gestures
+- poses
+- bottles
+- phones
+- remotes
+- cups
+- books
+- temporary objects
+- movable objects
 
-    - Ignore people.
-    - Ignore animals.
-    - Ignore temporary actions.
-    - Ignore gestures.
-    - Ignore poses.
+Only include:
+- walls
+- doors
+- windows
+- furniture
+- fixed structures
+- permanent room features
 
-    Describe ONLY:
+Return ONLY the following format:
 
-    ROOM TYPE:
-    (one line)
+ROOM TYPE:
+<one line>
 
-    STATIC OBJECTS:
-    (list)
+STATIC OBJECTS:
+<comma separated list>
 
-    LAYOUT:
-    (short description)
+LAYOUT:
+<one short sentence>
 
-    OBSTACLES:
-    (short description)
+OBSTACLES:
+<one short sentence>
 
-    Maximum 100 words.
-
-    Return ONLY these sections.
-    """
-
+Rules:
+- Maximum 50 words.
+- No explanations.
+- No reasoning.
+- No comments.
+- No text before the sections.
+- No text after the sections.
+"""
     response = requests.post(
 
         "https://openrouter.ai/api/v1/chat/completions",
@@ -69,7 +90,11 @@ def generate_visual_context(image_path):
         json={
 
             "model":
-            "meta-llama/llama-3.2-11b-vision-instruct",
+            "nvidia/nemotron-nano-12b-v2-vl:free",
+
+            "temperature": 0,
+
+            "max_tokens": 100,
 
             "messages": [
 
@@ -96,7 +121,10 @@ def generate_visual_context(image_path):
                     ]
                 }
             ]
-        }
+        },
+
+        timeout= 20
+
     )
 
     result = response.json()
@@ -104,6 +132,25 @@ def generate_visual_context(image_path):
     print("\nVISION RESPONSE:")
     print(result)
 
-    return result[
-        "choices"
-    ][0]["message"]["content"]
+    if "choices" not in result:
+
+        print("Using fallback environment memory.")
+        print(result)
+
+        return """
+ROOM TYPE:
+Unknown
+
+STATIC OBJECTS:
+Unknown
+
+LAYOUT:
+Unknown
+
+OBSTACLES:
+Unknown
+"""
+
+    content = result["choices"][0]["message"]["content"]
+
+    return content.strip()

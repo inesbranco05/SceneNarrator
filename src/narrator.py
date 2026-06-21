@@ -1,15 +1,26 @@
 from collections import Counter
 
-def get_position(x_center, frame_width):
+def get_position(x_center, y_center, frame_width, frame_height):
 
     if x_center < frame_width / 3:
-        return "left"
+        horizontal = "left"
 
     elif x_center < 2 * frame_width / 3:
-        return "center"
+        horizontal = "center"
 
     else:
-        return "right"
+        horizontal = "right"
+
+    if y_center < frame_height / 3:
+        vertical = "top"
+
+    elif y_center < 2 * frame_height / 3:
+        vertical = "middle"
+
+    else:
+        vertical = "bottom"
+
+    return f"{vertical}-{horizontal}"
     
 def describe_scene(detections):
 
@@ -19,27 +30,37 @@ def describe_scene(detections):
     counts = Counter()
 
     for obj in detections:
-        key = (obj["label"], obj["position"])
+        key = (
+            obj["label"],
+            obj["position"],
+            obj["distance"]
+        )
         counts[key] += 1
 
     descriptions = []
 
-    for (label, position), count in counts.items():
+    for (label, position, distance), count in counts.items():
 
         if count == 1:
             descriptions.append(
-                f"a {label} on the {position}"
+                f"a {label} at {position}"
             )
 
         else:
             descriptions.append(
-                f"{count} {label}s on the {position}"
+                f"{count} {label}s at {position}"
             )
 
     return "There is " + ", ".join(descriptions) + "."
 
 def normalize_scene(detections):
 
-    labels = sorted([obj["label"] for obj in detections])
+    normalized = []
 
-    return ", ".join(labels)
+    for obj in detections:
+
+        normalized.append(
+            f"{obj['label']}:{obj['position']}:{obj['distance']}"
+        )
+
+    return sorted(normalized)
