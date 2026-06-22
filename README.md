@@ -20,21 +20,7 @@ The system captures live video from a webcam and uses a YOLOv8 object detection 
 Detected objects and environmental context are then provided to a Large Language Model (LLM), which generates natural language descriptions of the scene. The narration is converted into speech using a text-to-speech engine, allowing users to receive auditory feedback about their surroundings.
 
 ## Tech Stack
-### Programming Language
-- Python 3
-### Deep Learning
-- YOLOv8 (Ultralytics)
-### Large Language Models
-- Groq API (Llama 3.1 8B Instant)
-- OpenRouter API
-- NVIDIA Nemotron Nano 12B Vision Language Model
-### Computer Vision
-- OpenCV
-### Text-to-Speech
-- pyttsx3
-### Other Libraries
-- requests
-- python-dotenv
+Python 3, YOLOv8 (Ultralytics), Groq API (Llama 3.1 8B Instant), OpenRouter API, NVIDIA Nemotron Nano 12B Vision Language Model, OpenCV, pyttsx3, requests, python-dotenv
 
 ## How to Run
 
