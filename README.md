@@ -13,11 +13,9 @@ Track A – Deep Learning
 
 ## Project Description
 
-Scene Narrator is a real-time visual accessibility assistant designed to help visually impaired users better understand their surroundings.
+Imagine pointing a camera at your surroundings and instantly hearing a clear description of what is happening around you.
 
-The system captures live video from a webcam and uses a YOLOv8 object detection model to identify objects present in the scene. An initial image is analyzed by a vision-language model to create a memory of the environment, including room type, layout, and permanent objects.
-
-Detected objects and environmental context are then provided to a Large Language Model (LLM), which generates natural language descriptions of the scene. The narration is converted into speech using a text-to-speech engine, allowing users to receive auditory feedback about their surroundings.
+Scene Narrator is a real-time visual accessibility assistant designed to improve environmental awareness for visually impaired users. By combining computer vision, deep learning and large language models, the system is able to understand a scene and transform visual information into natural spoken descriptions.
 
 ## Tech Stack
 Python 3, YOLOv8 (Ultralytics), Groq API (Llama 3.1 8B Instant), OpenRouter API, NVIDIA Nemotron Nano 12B Vision Language Model, OpenCV, pyttsx3, requests, python-dotenv
